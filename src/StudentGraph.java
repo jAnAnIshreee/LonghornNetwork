@@ -8,17 +8,57 @@ import java.util.*;
  */
 public class StudentGraph {
 
+    /**edge represents a connection from one student to a neighbor with a given weight
+     *
+     */
+    public static class Edge{
+        public UniversityStudent neighbor;
+        public int weight;
+
+        /**Constructor for edge
+         *
+         */
+        public Edge(UniversityStudent neighbor, int weight){
+            this.neighbor = neighbor;
+            this.weight = weight;
+        }
+
+        /**
+         *
+         * @return formatted string representing an edge
+         */
+        public String toString(){
+            return "(" + neighbor.name + ", " + weight + ")";
+        }
+    }
     /** Maps each student to a list of their connected edges. */
     private Map<UniversityStudent, List<Edge>> adjacencyList;
 
     /**
-     * Creates a StudentGraph containing the given students as nodes.
+     * Constructs a StudentGraph containing the given students as nodes.
      * Edges can be added afterward using addEdge.
      *
      * @param students the students to include as nodes in the graph
      */
     public StudentGraph(Collection<UniversityStudent> students) {
-        // implementation omitted
+        adjacencyList = new HashMap<>();
+        //Initialize nodes
+        for(UniversityStudent s : students){
+            adjacencyList.put(s, new ArrayList<>());
+        }
+
+        List<UniversityStudent> studentList = new ArrayList<>(students);
+        //Creates edges between every pair of students
+        for(int i=0; i<students.size(); i++){
+            for(int j= i + 1; j < studentList.size(); j++){
+                UniversityStudent s1  = studentList.get(i);
+                UniversityStudent s2 = studentList.get(j);
+                int weight = s1.calculateConnectionStrength(s2);
+                if(weight > 0){
+                    addEdge(s1, s2, weight);
+                }
+            }
+        }
     }
 
     /**
@@ -26,22 +66,25 @@ public class StudentGraph {
      * The edge is inserted for both students to maintain an
      * undirected graph structure.
      *
-     * @param a the first student
-     * @param b the second student
+     * @param s1 the first student
+     * @param s2 the second student
      * @param weight the connection strength between them
      */
-    public void addEdge(UniversityStudent a, UniversityStudent b, double weight) {
-        // implementation omitted
+    public void addEdge(UniversityStudent s1, UniversityStudent s2, int weight) {
+       // if (!adjacencyList.containsKey(s1) || !adjacencyList.containsKey(s2)) return;
+        adjacencyList.get(s1).add(new Edge(s2, weight));
+        adjacencyList.get(s2).add(new Edge(s1, weight));
     }
 
     /**
      * Returns a list of edges connected to the given student.
      *
-     * @param student the student whose neighbors are requested
+     * @param s the student whose neighbors are requested
      * @return list of edges representing neighboring connections
      */
-    public List<Edge> getNeighbors(UniversityStudent student) {
-        return null; // implementation omitted
+    public List<Edge> getNeighbors(UniversityStudent s) {
+       // return adjacencyList.getOrDefault(s, Collections.emptyList());
+        return adjacencyList.get(s);
     }
 
     /**
@@ -49,39 +92,23 @@ public class StudentGraph {
      *
      * @return a collection of all students in the graph
      */
-    public Collection<UniversityStudent> getAllNodes() {
-        return null; // implementation omitted
+    public Set<UniversityStudent> getAllNodes() {
+        return adjacencyList.keySet();
     }
 
+
+
     /**
-     * Represents a weighted edge connecting a student to another student.
+     * Prints the adjacency list for debugging purposes.
      */
-    public static class Edge {
-        private UniversityStudent neighbor;
-        private double weight;
-
-        /**
-         * Constructs an edge connecting to a neighbor with the given weight.
-         *
-         * @param neighbor the connected student
-         * @param weight the connection strength
-         */
-        public Edge(UniversityStudent neighbor, double weight) {
-            // implementation omitted
-        }
-
-        /**
-         * @return the student this edge connects to
-         */
-        public UniversityStudent getNeighbor() {
-            return null; // implementation omitted
-        }
-
-        /**
-         * @return the weight of the edge
-         */
-        public double getWeight() {
-            return 0.0; // implementation omitted
+    public void displayGraph() {
+//        for (Map.Entry<UniversityStudent, List<Edge>> entry : adjacencyList.entrySet()) {
+//            System.out.print(entry.getKey().name + " -> ");
+//            System.out.println(entry.getValue());
+//        }
+        System.out.println("\nStudent Graph:");
+        for (UniversityStudent s : adjacencyList.keySet()){
+            System.out.println(s.name + " -> " + adjacencyList.get(s));
         }
     }
 }

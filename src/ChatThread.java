@@ -1,3 +1,4 @@
+import java.util.concurrent.Semaphore;
 /**
  * A thread task that simulates sending a chat message between two
  * UniversityStudent objects. Chat history updates are thread-safe
@@ -8,6 +9,10 @@ public class ChatThread implements Runnable {
     private UniversityStudent receiver;
     private String message;
 
+
+    // Shared static chat log for all threads
+    private static final Semaphore semaphore = new Semaphore(1);
+
     /**
      * Creates a chat task representing a message being sent from one
      * student to another.
@@ -17,7 +22,9 @@ public class ChatThread implements Runnable {
      * @param message the message content to send
      */
     public ChatThread(UniversityStudent sender, UniversityStudent receiver, String message) {
-        // Constructor
+        this.sender = sender;
+        this.receiver = receiver;
+        this.message = message;
     }
 
     /**
@@ -27,6 +34,15 @@ public class ChatThread implements Runnable {
      */
     @Override
     public void run() {
-        // Method signature only
+        try{
+            semaphore.acquire();
+            //Simulate sending a chat message
+            System.out.println("Chat (Thread-Safe): " + sender.name + " to " + receiver.name + ": " + message);
+        } catch(InterruptedException e){
+            Thread.currentThread().interrupt();
+            System.err.println("Chat interrupted: " + e.getMessage());
+        } finally{
+            semaphore.release();
+        }
     }
 }

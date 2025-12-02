@@ -16,7 +16,7 @@ public class PodFormation {
      * @param graph the student graph used to determine pod groupings
      */
     public PodFormation(StudentGraph graph) {
-        // Constructor
+        this.graph = graph;
     }
 
 
